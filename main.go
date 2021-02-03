@@ -34,7 +34,7 @@ func showPage(p, w int, h int) {
 }
 
 func main() {
-	parser.Md("example/example.md")
+	parser.Parse("example.md")
 }
 
 // func main() {
