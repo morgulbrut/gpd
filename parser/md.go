@@ -58,7 +58,6 @@ func Md(doc string) md {
 	data := pgs[1:]
 
 	for _, l := range meta {
-		fmt.Println(l)
 		if strings.HasPrefix(l, "%title") {
 			d.title = strings.TrimSpace(strings.Split(l, ":")[1])
 		}
@@ -69,10 +68,6 @@ func Md(doc string) md {
 			d.date = strings.TrimSpace(strings.Split(l, ":")[1])
 		}
 	}
-	fmt.Println(d.date)
-	fmt.Println(d.title)
-	fmt.Println(d.author)
-
 	for _, p := range data {
 		Page(p)
 	}
@@ -82,6 +77,31 @@ func Md(doc string) md {
 
 func Page(pg string) page {
 	var p page
+	var e element
+	lines := strings.Split(pg, "\n")
 
+	for _, l := range lines {
+		if strings.HasPrefix(l, "# ") {
+			e.text = strings.Trim(l, "# ")
+			e.text = strings.TrimSpace(e.text)
+			e.format = Heading1
+			p.elements = append(p.elements, e)
+		} else if strings.HasPrefix(l, "## ") {
+			e.text = strings.Trim(l, "## ")
+			e.text = strings.TrimSpace(e.text)
+			e.format = Heading2
+			p.elements = append(p.elements, e)
+		} else if strings.HasPrefix(l, "### ") {
+			e.text = strings.Trim(l, "### ")
+			e.text = strings.TrimSpace(e.text)
+			e.format = Heading3
+			p.elements = append(p.elements, e)
+		} else {
+
+		}
+	}
+	for _, bla := range p.elements {
+		fmt.Printf("%s: %d\n", bla.text, bla.format)
+	}
 	return p
 }
