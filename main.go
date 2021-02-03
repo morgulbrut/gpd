@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"time"
 
-	"github.com/eiannone/keyboard"
 	"github.com/morgulbrut/color256"
 	tm "github.com/morgulbrut/goterm"
+	"github.com/morgulbrut/gpd/parser"
 )
 
 func showPage(p, w int, h int) {
@@ -35,33 +34,37 @@ func showPage(p, w int, h int) {
 }
 
 func main() {
-	tm.Clear() // Clear current screen
-
-	p := 0
-	for {
-		// By moving cursor to top-left position we ensure that console output
-		// will be overwritten each time, instead of adding new.
-		tm.Clear()
-
-		w := tm.Width()
-		h := tm.Height()
-		showPage(p, w, h)
-		tm.Flush() // Call it every time at the end of rendering
-		char, key, err := keyboard.GetSingleKey()
-		if err != nil {
-			panic(err)
-		}
-		if char == 'q' {
-			tm.Clear()
-			tm.MoveCursor(1, 1)
-			tm.Flush()
-			os.Exit(0)
-		}
-		if key == keyboard.KeyArrowLeft {
-			p = 0
-		} else {
-			p = 1
-		}
-		time.Sleep(100 * time.Millisecond)
-	}
+	parser.Md("example/example.md")
 }
+
+// func main() {
+// 	tm.Clear() // Clear current screen
+
+// 	p := 0
+// 	for {
+// 		// By moving cursor to top-left position we ensure that console output
+// 		// will be overwritten each time, instead of adding new.
+// 		tm.Clear()
+
+// 		w := tm.Width()
+// 		h := tm.Height()
+// 		showPage(p, w, h)
+// 		tm.Flush() // Call it every time at the end of rendering
+// 		char, key, err := keyboard.GetSingleKey()
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 		if char == 'q' {
+// 			tm.Clear()
+// 			tm.MoveCursor(1, 1)
+// 			tm.Flush()
+// 			os.Exit(0)
+// 		}
+// 		if key == keyboard.KeyArrowLeft {
+// 			p = 0
+// 		} else {
+// 			p = 1
+// 		}
+// 		time.Sleep(100 * time.Millisecond)
+// 	}
+// }
