@@ -9,34 +9,39 @@ import (
 	"github.com/morgulbrut/gpd/utils"
 )
 
-type md struct {
-	title  string
-	author string
-	date   string
-	pages  []page
+type Md struct {
+	Title  string
+	Author string
+	Date   string
+	Pages  []Page
 }
 
-type page struct {
-	elements []element
+type Page struct {
+	Elements []Element
 }
 
-type element struct {
-	text   string
-	format format
+type Element struct {
+	Text   string
+	Format Format
 }
 
-type format int
+type Format int
 
 const (
-	Default format = iota
-	Bold
-	Italic
-	BoldItalic
-	Heading1
-	Heading2
-	Heading3
-	Quote
-	Code
+	DEFAULT Format = iota
+	BOLD
+	ITALIC
+	BOLDITALIC
+	HEADING1
+	HEADING2
+	HEADING3
+	HEADING4
+	HEADING5
+	HEADING6
+	BLOCKQOUTE
+	ULIST
+	OLIST
+	CODE
 )
 
 func Parse(fileName string) {
@@ -45,11 +50,11 @@ func Parse(fileName string) {
 	utils.Check(err)
 	input := string(dat)
 
-	Md(input)
+	md(input)
 }
 
-func Md(doc string) md {
-	var d md
+func md(doc string) Md {
+	var d Md
 
 	re := regexp.MustCompile("\n---.*\n")
 	pgs := re.Split(doc, -1)
@@ -59,49 +64,74 @@ func Md(doc string) md {
 
 	for _, l := range meta {
 		if strings.HasPrefix(l, "%title") {
-			d.title = strings.TrimSpace(strings.Split(l, ":")[1])
+			d.Title = strings.TrimSpace(strings.Split(l, ":")[1])
 		}
 		if strings.HasPrefix(l, "%author") {
-			d.author = strings.TrimSpace(strings.Split(l, ":")[1])
+			d.Author = strings.TrimSpace(strings.Split(l, ":")[1])
 		}
 		if strings.HasPrefix(l, "%date") {
-			d.date = strings.TrimSpace(strings.Split(l, ":")[1])
+			d.Date = strings.TrimSpace(strings.Split(l, ":")[1])
 		}
 	}
 	for _, p := range data {
-		Page(p)
+		page(p)
 	}
 
 	return d
 }
 
-func Page(pg string) page {
-	var p page
-	var e element
+func page(pg string) Page {
+	var p Page
+	var e Element
 	lines := strings.Split(pg, "\n")
 
 	for _, l := range lines {
+
+		//BlockQuotes
+		if strings.HasPrefix(l, "> ") {
+			e.Text = strings.Trim(l, "> ")
+			e.Text = strings.TrimSpace(e.Text)
+			e.Format = BLOCKQOUTE
+			p.Elements = append(p.Elements, e)
+		}
+		// Headings
 		if strings.HasPrefix(l, "# ") {
-			e.text = strings.Trim(l, "# ")
-			e.text = strings.TrimSpace(e.text)
-			e.format = Heading1
-			p.elements = append(p.elements, e)
+			e.Text = strings.Trim(l, "# ")
+			e.Text = strings.TrimSpace(e.Text)
+			e.Format = HEADING1
+			p.Elements = append(p.Elements, e)
 		} else if strings.HasPrefix(l, "## ") {
-			e.text = strings.Trim(l, "## ")
-			e.text = strings.TrimSpace(e.text)
-			e.format = Heading2
-			p.elements = append(p.elements, e)
+			e.Text = strings.Trim(l, "## ")
+			e.Text = strings.TrimSpace(e.Text)
+			e.Format = HEADING2
+			p.Elements = append(p.Elements, e)
 		} else if strings.HasPrefix(l, "### ") {
-			e.text = strings.Trim(l, "### ")
-			e.text = strings.TrimSpace(e.text)
-			e.format = Heading3
-			p.elements = append(p.elements, e)
+			e.Text = strings.Trim(l, "### ")
+			e.Text = strings.TrimSpace(e.Text)
+			e.Format = HEADING3
+			p.Elements = append(p.Elements, e)
+		} else if strings.HasPrefix(l, "#### ") {
+			e.Text = strings.Trim(l, "#### ")
+			e.Text = strings.TrimSpace(e.Text)i
+			e.Format = HEADING4
+			p.Elements = append(p.Elements, e)
+		} else if strings.HasPrefix(l, "##### ") {
+			e.Text = strings.Trim(l, "##### ")
+			e.Text = strings.TrimSpace(e.Text)
+			e.Format = HEADING5
+			p.Elements = append(p.Elements, e)
+		} else if strings.HasPrefix(l, "###### ") {
+			e.Text = strings.Trim(l, "###### ")
+			e.Text = strings.TrimSpace(e.Text)
+			e.Format = HEADING6
+			p.Elements = append(p.Elements, e)
+
 		} else {
 
 		}
 	}
-	for _, bla := range p.elements {
-		fmt.Printf("%s: %d\n", bla.text, bla.format)
+	for _, bla := range p.Elements {
+		fmt.Printf("%s: %d\n", bla.Text, bla.Format)
 	}
 	return p
 }
